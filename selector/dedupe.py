@@ -7,7 +7,7 @@ from typing import List, Optional, Tuple
 from difflib import SequenceMatcher
 from dataclasses import dataclass
 
-from ..models.property import Property
+from models.property import Property
 
 
 @dataclass

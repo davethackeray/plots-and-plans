@@ -8,12 +8,12 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 import json
 
-from ..database import db
-from ..models.property import Property
-from .scorer import HeartRateScorer
+from database import db
+from models.property import Property
+from models.scorer import HeartRateScorer
 
 
-class SelectionEngine:
+class PropertySelector:
     """
     Daily property selection logic.
     Runs Heart-Rate algorithm, ensures variety, prevents repeats.
@@ -21,6 +21,18 @@ class SelectionEngine:
 
     def __init__(self):
         self.scorer = HeartRateScorer()
+
+    async def select_for_date(self, target_date: datetime, preferences: Dict = None) -> Dict:
+        """Fetch available properties from DB and run selection."""
+        rows = await db.fetch_all("SELECT * FROM properties WHERE is_still_for_sale = 1")
+        # Ensure we construct Property objects correctly, converting sqlite.Row if necessary
+        available = [Property.from_dict(dict(r)) for r in rows]
+        selected, metadata = await self.select_daily_properties(available, target_date, preferences)
+        return {
+            "selected": selected,
+            "metadata": metadata,
+            "nearby_episodes": await self._find_nearby_episodes(selected)
+        }
 
     async def select_daily_properties(
         self,

@@ -45,7 +45,7 @@ async def init():
             json.dumps(agency['property_types']),
         ))
 
-    await conn.commit()
+
     await conn.close()
 
     print(f"✓ Database initialized at {db_file}")

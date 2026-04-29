@@ -15,8 +15,8 @@ from playwright.async_api import async_playwright
 from bs4 import BeautifulSoup
 from loguru import logger
 
-from ..models.property import Property
-from ..models.scorer import PropertyProcessor
+from models.property import Property
+from models.scorer import PropertyProcessor
 
 
 class BaseScraper(ABC):

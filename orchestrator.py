@@ -249,7 +249,7 @@ class DailyShowOrchestrator:
                 ))
                 new_count += 1
 
-        await conn.commit()
+
         return new_count, updated_count
 
     def _format_telegram_message(self, selection: Dict) -> str:
@@ -292,10 +292,10 @@ class DailyShowOrchestrator:
             INSERT INTO scrape_log (
                 agency_id, scrape_start, scrape_end,
                 properties_found, properties_new, properties_updated,
-                status, notes
+                status, error_message
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """, (
-            0,  # 0 = all agencies
+            1,  # 1 = Use first agency ID to satisfy FK constraint for global run
             datetime.now().isoformat(),
             datetime.now().isoformat(),
             self.scrape_results['total_found'],

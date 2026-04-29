@@ -1,12 +1,13 @@
 name = "daily-property-show"
 main = "api/index.py"
 compatibility_date = "2024-01-01"
+compatibility_flags = ["python_workers"]
 
 # Production database - D1
 [[d1_databases]]
 binding = "DB"
 database_name = "daily-property-show"
-database_id = "YOUR_D1_DATABASE_ID_HERE"  # Set via wrangler d1 create
+database_id = "1cc9a8c6-ecbe-462d-b818-c5664c5130c0"
 
 # Environment variables (set via wrangler secrets or dashboard)
 [vars]

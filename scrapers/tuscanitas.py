@@ -11,9 +11,10 @@ from datetime import datetime
 from typing import List, Optional, Dict, Any
 from bs4 import BeautifulSoup
 from loguru import logger
+from playwright.async_api import async_playwright
 
 from .base import BaseScraper
-from ..models.property import Property
+from models.property import Property
 
 
 class TuscanitasScraper(BaseScraper):
@@ -46,8 +47,11 @@ class TuscanitasScraper(BaseScraper):
                     page_url = list_url if page_num == 1 else f"{list_url}?page={page_num}"
                     await page.goto(page_url, wait_until='networkidle', timeout=30000)
 
-                    # Wait for property grid
-                    await page.wait_for_selector('.property-listing, .property-card, .item', timeout=10000)
+                    # Wait for property grid (optional)
+                    try:
+                        await page.wait_for_selector('.property-listing, .property-card, .item', timeout=5000)
+                    except Exception:
+                        logger.debug("Selector wait timed out, proceeding with current DOM")
 
                     # Extract links
                     links = await page.eval_on_selector_all(

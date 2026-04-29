@@ -1,0 +1,50 @@
+version: '3.9'
+
+services:
+  rsshub:
+    # Use the official RSSHub image which includes Puppeteer support
+    image: diygod/rsshub
+    container_name: rsshub-local
+    restart: always
+    ports:
+      - '1200:1200'
+    environment:
+      # Use Redis for caching (crucial so we don't hit agent websites on every refresh)
+      CACHE_TYPE: redis
+      REDIS_URL: redis://redis:6379/
+      PUPPETEER_WS_ENDPOINT: ws://browserless:3000
+      # Limit cache time (e.g., 24 hours = 86400 seconds)
+      CACHE_EXPIRE: "86400"
+      # Enable JSON feeds natively
+      TITLE_LENGTH_LIMIT: "150"
+      # Mount our custom agent routes
+      ROUTE_CONFIG_PATH: /app/routes_override.js
+    volumes:
+      # This binds our local custom routes into the container
+      - ./rsshub_routes:/app/lib/v2/realestate
+      - ./rsshub_routes_override.js:/app/routes_override.js
+    depends_on:
+      - redis
+      - browserless
+
+  # Redis handles the ctx.cache.tryGet() calls
+  redis:
+    image: redis:alpine
+    container_name: rsshub-redis
+    restart: always
+    volumes:
+      - redis-data:/data
+
+  # Browserless runs Puppeteer for JavaScript-heavy agent websites
+  browserless:
+    image: browserless/chrome
+    container_name: rsshub-browserless
+    restart: always
+    ports:
+      - '3000:3000'
+    environment:
+      MAX_CONCURRENT_SESSIONS: "10"
+      CONNECTION_TIMEOUT: "60000"
+
+volumes:
+  redis-data:

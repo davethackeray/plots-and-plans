@@ -10,9 +10,10 @@ from datetime import datetime
 from typing import List, Optional, Dict, Any
 from bs4 import BeautifulSoup
 from loguru import logger
+from playwright.async_api import async_playwright
 
 from .base import BaseScraper
-from ..models.property import Property
+from models.property import Property
 
 
 class BeauxVillagesScraper(BaseScraper):
@@ -51,10 +52,13 @@ class BeauxVillagesScraper(BaseScraper):
                     page_url = f"{list_url}?start={offset}"
                     await page.goto(page_url, wait_until='networkidle', timeout=30000)
 
-                    # Wait for property cards
-                    await page.wait_for_selector('.property-item, .property-card, .item', timeout=10000)
+                    # Wait for property grid (optional)
+                    try:
+                        await page.wait_for_selector('.property-item, .property-card, .item', timeout=5000)
+                    except Exception:
+                        logger.debug("Selector wait timed out, proceeding with current DOM")
 
-                    # Extract property links
+                    # Extract links
                     links = await page.eval_on_selector_all(
                         'a[href*="/property/"], a[href*="/for-sale/"]',
                         'elements => elements.map(e => e.href)'
