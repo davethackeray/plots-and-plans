@@ -1,0 +1,28 @@
+name = "daily-property-show"
+main = "api/index.py"
+compatibility_date = "2024-01-01"
+
+# Production database - D1
+[[d1_databases]]
+binding = "DB"
+database_name = "daily-property-show"
+database_id = "YOUR_D1_DATABASE_ID_HERE"  # Set via wrangler d1 create
+
+# Environment variables (set via wrangler secrets or dashboard)
+[vars]
+TELEGRAM_BOT_TOKEN = ""
+TELEGRAM_CHAT_ID = ""
+
+# Build command (for when we have frontend)
+# [build]
+# command = "pip install -r requirements.txt && python -m pip install --upgrade pip"
+
+# Routes
+# routes = [
+#   { pattern = "/api/*", zone_name = "api" }
+# ]
+
+# Development
+# [dev]
+# port = 8788
+# ip = "127.0.0.1"

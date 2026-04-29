@@ -1,0 +1,29 @@
+# Core dependencies
+python-dotenv>=1.0.0
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+playwright>=1.40.0
+sqlite3-to-mysql>=0.1.7  # D1 compatibility
+
+# Database
+aiosqlite>=0.19.0
+pydantic>=2.0.0
+sqlmodel>=0.0.8
+
+# Web/API
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+jinja2>=3.1.0
+
+# Geocoding
+geopy>=2.3.0
+
+# Utilities
+python-dateutil>=2.8.0
+pytz>=2023.3
+tenacity>=8.2.0
+loguru>=0.7.0
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0

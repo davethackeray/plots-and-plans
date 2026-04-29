@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Property Show - Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏡 Daily Property Show Dashboard</h1>
+            <div class="date-display">
+                <strong>{{ date }}</strong>
+                <span class="meta">{{ metadata.segments|length }} properties • Avg score: {{ "%.0f"|format(metadata.avg_score) }}/1000</span>
+            </div>
+        </header>
+
+        <main>
+            {% if properties %}
+            <div class="properties-grid">
+                {% for prop in properties %}
+                <div class="property-card segment-{{ prop.segment|replace(' ', '-')|lower }}">
+                    <div class="segment-badge">{{ prop.segment }}</div>
+
+                    {% if prop.primary_image %}
+                    <img src="{{ prop.primary_image }}" alt="{{ prop.title }}" class="property-image">
+                    {% else %}
+                    <div class="no-image">No image available</div>
+                    {% endif %}
+
+                    <div class="property-details">
+                        <h3 class="property-title">{{ prop.title }}</h3>
+
+                        <div class="price">€{{ "{:,.0f}".format(prop.price) }}</div>
+
+                        <div class="specs">
+                            {% if prop.bedrooms %}
+                            <span class="spec">🛏️ {{ prop.bedrooms }}</span>
+                            {% endif %}
+                            {% if prop.bathrooms %}
+                            <span class="spec">🚿 {{ prop.bathrooms }}</span>
+                            {% endif %}
+                            <span class="spec">📍 {{ prop.city }}, {{ prop.country }}</span>
+                        </div>
+
+                        <div class="heart-rate">
+                            <div class="heart-label">Heart Rate Score</div>
+                            <div class="heart-value">{{ prop.heart_rate_score }}</div>
+                            <div class="sub-scores">
+                                <span title="Sublime Escapism">🌅 {{ prop.scores.sublime }}</span>
+                                <span title="Authentic Bones">🏛️ {{ prop.scores.authentic }}</span>
+                                <span title="Sanctuary Capacity">🧘 {{ prop.scores.sanctuary }}</span>
+                            </div>
+                        </div>
+
+                        <div class="actions">
+                            <a href="{{ prop.listing_url }}" target="_blank" class="btn btn-primary">
+                                View Listing
+                            </a>
+                            {% if metadata.nearby_episodes[prop.id] %}
+                            <div class="nearby-hint">
+                                📍 Related: Episode {{ metadata.nearby_episodes[prop.id][0].show_id }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Backup Pool -->
+            {% if backup_pool %}
+            <section class="backup-pool">
+                <h2>🔄 Backup Pool (if any fail)</h2>
+                <div class="backup-list">
+                    {% for backup in backup_pool[:10] %}
+                    <div class="backup-item">
+                        <span class="backup-title">{{ backup.title[:60] }}...</span>
+                        <span class="backup-score">{{ backup.heart_rate_score }}</span>
+                        <a href="{{ backup.listing_url }}" target="_blank">View</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+
+            {% else %}
+            <div class="error">
+                <p>No properties selected. Check scraper logs.</p>
+                {% if metadata.error %}
+                <p><strong>Error:</strong> {{ metadata.error }}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+        </main>
+
+        <footer>
+            <p>
+                <a href="/api/properties/today" class="btn btn-small">JSON API</a>
+                <a href="/production-sheet/{{ date }}" class="btn btn-small">📥 CSV Sheet</a>
+                <a href="https://github.com/roamtohome/daily-show-system" target="_blank">GitHub Repo</a>
+            </p>
+        </footer>
+    </div>
+
+    <script src="/static/dashboard.js"></script>
+</body>
+</html>
